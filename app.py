@@ -1,6 +1,7 @@
 import streamlit as st
 
 from game_engine import GameEngine
+from services.save_service import SaveService
 
 
 st.set_page_config(
@@ -14,32 +15,79 @@ if "game" not in st.session_state:
     st.session_state.game = GameEngine()
 
 
+if "save" not in st.session_state:
+    st.session_state.save = SaveService()
+
+
 game = st.session_state.game
+save = st.session_state.save
 
 
 st.sidebar.title("⚽ Soccer GM")
 
 
+# Save / Load buttons
+
+st.sidebar.divider()
+
+if st.sidebar.button("💾 Save Career"):
+
+    save.save_game(game)
+
+    st.sidebar.success(
+        "Career saved!"
+    )
+
+
+if st.sidebar.button("📂 Load Career"):
+
+    loaded = save.load_game(game)
+
+    if loaded:
+        st.sidebar.success(
+            "Career loaded!"
+        )
+
+        st.rerun()
+
+    else:
+        st.sidebar.error(
+            "No save found."
+        )
+
+
+
 if game.club is None:
 
     st.title("⚽ Soccer GM")
-    st.write("Start your manager career.")
 
-    club_names = [
+    st.write(
+        "Start your manager career."
+    )
+
+
+    clubs = [
         club.name
         for club in game.available_clubs
     ]
 
+
     selected = st.selectbox(
         "Choose your club:",
-        club_names
+        clubs
     )
 
 
-    if st.button("Start Career"):
+    if st.button(
+        "Start Career"
+    ):
 
-        game.choose_club(selected)
+        game.choose_club(
+            selected
+        )
+
         st.rerun()
+
 
 
 else:
@@ -75,6 +123,7 @@ else:
 
 
         with col1:
+
             st.metric(
                 "💰 Budget",
                 f"${club.budget:,}"
@@ -82,6 +131,7 @@ else:
 
 
         with col2:
+
             st.metric(
                 "🏆 Points",
                 club.points
@@ -89,6 +139,7 @@ else:
 
 
         with col3:
+
             st.metric(
                 "📅 Week",
                 game.season.current_week
@@ -98,11 +149,9 @@ else:
         st.divider()
 
 
-        st.subheader("⚽ Next Match")
-
-
-        fixture = game.fixture_service.get_next_match(
-            club
+        fixture = (
+            game.fixture_service
+            .get_next_match(club)
         )
 
 
@@ -116,13 +165,12 @@ else:
 
 
             st.info(
-                f"{club.name} vs {opponent.name}"
+                f"Next Match: {club.name} vs {opponent.name}"
             )
 
 
             if st.button(
-                "▶ Play Match",
-                use_container_width=True
+                "▶ Play Match"
             ):
 
                 result = game.play_match()
@@ -132,36 +180,23 @@ else:
                 st.rerun()
 
 
-        else:
-
-            st.success(
-                "Season finished!"
-            )
-
-
 
         if "last_match" in st.session_state:
-
-            st.divider()
 
             st.subheader(
                 "📋 Last Match"
             )
 
-            result = st.session_state.last_match
-
             st.success(
-                result["result"]
+                st.session_state.last_match["result"]
             )
 
-            st.write(
-                f"Winner: {result['winner']}"
-            )
 
 
     elif page == "👥 Squad":
 
         st.title("👥 Squad")
+
 
         for player in club.players:
 
@@ -175,12 +210,14 @@ else:
 
     elif page == "🏆 League":
 
-        st.title("🏆 League Table")
+        st.title(
+            "🏆 League Table"
+        )
 
 
         table = sorted(
             game.available_clubs,
-            key=lambda x: x.points,
+            key=lambda x:x.points,
             reverse=True
         )
 
@@ -198,14 +235,21 @@ else:
 
     elif page == "🔄 Transfers":
 
-        st.title("🔄 Transfers")
-        st.info("Transfer market active.")
+        st.title(
+            "🔄 Transfers"
+        )
+
+        st.info(
+            "Transfer system active."
+        )
 
 
 
     elif page == "💰 Finances":
 
-        st.title("💰 Finances")
+        st.title(
+            "💰 Finances"
+        )
 
         st.write(
             f"Budget: ${club.budget:,}"
