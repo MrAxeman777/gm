@@ -32,6 +32,7 @@ class GameEngine:
         players = []
 
         for p in data:
+
             player = Player(
                 name=p["name"],
                 age=p["age"],
@@ -39,7 +40,13 @@ class GameEngine:
                 overall=p["overall"],
                 potential=p["potential"],
                 value=p["value"],
-                wage=p["wage"]
+                wage=p["wage"],
+                pace=p["pace"],
+                shooting=p["shooting"],
+                passing=p["passing"],
+                dribbling=p["dribbling"],
+                defending=p["defending"],
+                physical=p["physical"]
             )
 
             players.append(player)
@@ -65,12 +72,12 @@ class GameEngine:
             )
 
 
-            # Add players to club
             for player_name in c.get("players", []):
 
                 for player in self.available_players:
 
                     if player.name == player_name:
+
                         club.add_player(player)
 
 
@@ -93,12 +100,11 @@ class GameEngine:
 
     def play_match(self):
 
-        self.club.budget += 3000000
+        result = self.match.play_match(
+            self.club,
+            self.club
+        )
 
         self.season.next_week()
 
-        return {
-            "result": f"{self.club.name} won the match!",
-            "money": 3000000,
-            "week": self.season.current_week
-        }
+        return result
