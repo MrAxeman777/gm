@@ -73,55 +73,95 @@ else:
 
         col1, col2, col3 = st.columns(3)
 
+
         with col1:
             st.metric(
                 "💰 Budget",
                 f"${club.budget:,}"
             )
 
-        with col2:
-            st.metric(
-                "⭐ Reputation",
-                club.reputation
-            )
 
-        with col3:
+        with col2:
             st.metric(
                 "🏆 Points",
                 club.points
             )
 
 
+        with col3:
+            st.metric(
+                "📅 Week",
+                game.season.current_week
+            )
+
+
         st.divider()
 
 
-        if st.button(
-            "▶ Play Match"
-        ):
+        st.subheader("⚽ Next Match")
 
-            result = game.play_match()
 
-            st.session_state.last_match = result
+        fixture = game.fixture_service.get_next_match(
+            club
+        )
+
+
+        if fixture:
+
+            opponent = (
+                fixture["away"]
+                if fixture["home"] == club
+                else fixture["home"]
+            )
+
+
+            st.info(
+                f"{club.name} vs {opponent.name}"
+            )
+
+
+            if st.button(
+                "▶ Play Match",
+                use_container_width=True
+            ):
+
+                result = game.play_match()
+
+                st.session_state.last_match = result
+
+                st.rerun()
+
+
+        else:
+
+            st.success(
+                "Season finished!"
+            )
+
 
 
         if "last_match" in st.session_state:
 
-            match = st.session_state.last_match
+            st.divider()
+
+            st.subheader(
+                "📋 Last Match"
+            )
+
+            result = st.session_state.last_match
 
             st.success(
-                match["result"]
+                result["result"]
             )
 
             st.write(
-                f"Winner: {match['winner']}"
+                f"Winner: {result['winner']}"
             )
-
 
 
     elif page == "👥 Squad":
 
         st.title("👥 Squad")
-
 
         for player in club.players:
 
@@ -145,47 +185,21 @@ else:
         )
 
 
-        for index, team in enumerate(
+        for i, team in enumerate(
             table,
-            start=1
+            1
         ):
 
-            goal_difference = (
-                team.goals_for
-                -
-                team.goals_against
-            )
-
-
             st.write(
-                f"""
-{index}. **{team.name}**
-
-Games: {team.matches}
-
-Wins: {team.wins}
-
-Draws: {team.draws}
-
-Losses: {team.losses}
-
-GD: {goal_difference}
-
-Points: {team.points}
-"""
+                f"{i}. {team.name} - {team.points} pts"
             )
-
-            st.divider()
 
 
 
     elif page == "🔄 Transfers":
 
         st.title("🔄 Transfers")
-
-        st.info(
-            "Transfer system active."
-        )
+        st.info("Transfer market active.")
 
 
 
