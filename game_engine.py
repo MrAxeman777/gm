@@ -1,3 +1,5 @@
+import json
+
 from services.finance_service import FinanceService
 from services.transfer_service import TransferService
 from services.match_service import MatchService
@@ -15,23 +17,51 @@ class GameEngine:
         self.match = MatchService()
         self.season = SeasonService()
 
-        self.club = Club(
-            name="Manchester United",
-            league="Premier League",
-            budget=150_000_000,
-            wage_budget=4_000_000,
-            reputation=90
-        )
+        self.available_clubs = self.load_clubs()
+
+        self.club = None
+
+
+    def load_clubs(self):
+
+        with open("data/clubs.json", "r") as file:
+            data = json.load(file)
+
+        clubs = []
+
+        for c in data:
+            club = Club(
+                name=c["name"],
+                league=c["league"],
+                budget=c["budget"],
+                wage_budget=c["wage_budget"],
+                reputation=c["reputation"]
+            )
+
+            clubs.append(club)
+
+        return clubs
+
+
+    def choose_club(self, club_name):
+
+        for club in self.available_clubs:
+
+            if club.name == club_name:
+                self.club = club
+                return True
+
+        return False
+
 
     def play_match(self):
 
-        # Temporary placeholder
-        self.club.budget += 3_000_000
+        self.club.budget += 3000000
 
         self.season.next_week()
 
         return {
-            "result": "Manchester United 2-1 Chelsea",
+            "result": "Match completed!",
             "money": 3000000,
             "week": self.season.current_week
         }
