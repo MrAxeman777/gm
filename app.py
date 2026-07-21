@@ -10,7 +10,7 @@ st.set_page_config(
 )
 
 
-# Create game
+# Create game engine
 if "game" not in st.session_state:
     st.session_state.game = GameEngine()
 
@@ -21,9 +21,9 @@ game = st.session_state.game
 st.sidebar.title("⚽ Soccer GM")
 
 
-# --------------------
-# NEW CAREER
-# --------------------
+# -------------------------
+# New Career
+# -------------------------
 
 if game.club is None:
 
@@ -37,7 +37,7 @@ if game.club is None:
     ]
 
 
-    selected = st.selectbox(
+    selected_club = st.selectbox(
         "Choose your club:",
         club_names
     )
@@ -48,14 +48,14 @@ if game.club is None:
         use_container_width=True
     ):
 
-        game.choose_club(selected)
+        game.choose_club(selected_club)
 
         st.rerun()
 
 
-# --------------------
-# GAME DASHBOARD
-# --------------------
+# -------------------------
+# Main Game
+# -------------------------
 
 else:
 
@@ -63,7 +63,7 @@ else:
 
 
     st.sidebar.success(
-        f"Manager of {club.name}"
+        f"Managing {club.name}"
     )
 
 
@@ -73,17 +73,18 @@ else:
             "🏠 Dashboard",
             "👥 Squad",
             "🔄 Transfers",
-            "🏆 League"
+            "🏆 League",
+            "💰 Finances"
         ]
     )
 
 
+    # Dashboard
     if page == "🏠 Dashboard":
 
         st.title(
             f"🏟️ {club.name}"
         )
-
 
         col1, col2, col3 = st.columns(3)
 
@@ -104,7 +105,7 @@ else:
 
         with col3:
             st.metric(
-                "👥 Squad",
+                "👥 Squad Size",
                 len(club.players)
             )
 
@@ -112,9 +113,7 @@ else:
         st.divider()
 
 
-        st.subheader(
-            "📅 Next Match"
-        )
+        st.subheader("📅 Next Match")
 
 
         if st.button(
@@ -129,7 +128,7 @@ else:
             )
 
             st.write(
-                f"💰 Earned ${result['money']:,}"
+                f"💰 Earned: ${result['money']:,}"
             )
 
             st.write(
@@ -137,35 +136,93 @@ else:
             )
 
 
+    # Squad
     elif page == "👥 Squad":
 
         st.title("👥 Squad")
 
-        if club.players:
+
+        if len(club.players) > 0:
 
             for player in club.players:
-                st.write(player.name)
+
+                st.subheader(
+                    f"⚽ {player.name}"
+                )
+
+
+                col1, col2, col3 = st.columns(3)
+
+
+                with col1:
+                    st.write(
+                        f"Position: {player.position}"
+                    )
+
+                    st.write(
+                        f"Age: {player.age}"
+                    )
+
+
+                with col2:
+                    st.write(
+                        f"⭐ Overall: {player.overall}"
+                    )
+
+                    st.write(
+                        f"🚀 Potential: {player.potential}"
+                    )
+
+
+                with col3:
+                    st.write(
+                        f"💰 Value: ${player.value:,}"
+                    )
+
+                    st.write(
+                        f"💵 Wage: ${player.wage:,}"
+                    )
+
+
+                st.divider()
+
 
         else:
 
             st.info(
-                "No players loaded yet."
+                "Your squad is empty."
             )
 
 
+    # Transfers
     elif page == "🔄 Transfers":
 
-        st.title("🔄 Transfers")
+        st.title("🔄 Transfer Market")
 
         st.info(
             "Transfer market coming next."
         )
 
 
+    # League
     elif page == "🏆 League":
 
         st.title("🏆 League")
 
         st.info(
             "League system coming next."
+        )
+
+
+    # Finances
+    elif page == "💰 Finances":
+
+        st.title("💰 Finances")
+
+        st.write(
+            f"Transfer Budget: ${club.budget:,}"
+        )
+
+        st.write(
+            f"Wage Budget: ${club.wage_budget:,}"
         )
