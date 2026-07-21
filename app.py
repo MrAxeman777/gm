@@ -23,17 +23,16 @@ st.sidebar.title("⚽ Soccer GM")
 if game.club is None:
 
     st.title("⚽ Soccer GM")
-
     st.write("Start your manager career.")
 
-    clubs = [
+    club_names = [
         club.name
         for club in game.available_clubs
     ]
 
     selected = st.selectbox(
         "Choose your club:",
-        clubs
+        club_names
     )
 
 
@@ -74,13 +73,11 @@ else:
 
         col1, col2, col3 = st.columns(3)
 
-
         with col1:
             st.metric(
                 "💰 Budget",
                 f"${club.budget:,}"
             )
-
 
         with col2:
             st.metric(
@@ -88,23 +85,18 @@ else:
                 club.reputation
             )
 
-
         with col3:
             st.metric(
-                "👥 Squad",
-                len(club.players)
+                "🏆 Points",
+                club.points
             )
 
 
         st.divider()
 
 
-        st.subheader("⚽ Match")
-
-
         if st.button(
-            "▶ Play Match",
-            use_container_width=True
+            "▶ Play Match"
         ):
 
             result = game.play_match()
@@ -116,39 +108,14 @@ else:
 
             match = st.session_state.last_match
 
-
             st.success(
                 match["result"]
             )
 
-
             st.write(
-                f"🏆 Winner: {match['winner']}"
+                f"Winner: {match['winner']}"
             )
 
-
-            st.write(
-                "⚽ Goals:"
-            )
-
-
-            for scorer in match["home_scorers"]:
-
-                st.write(
-                    f"⚽ {scorer}"
-                )
-
-
-            for scorer in match["away_scorers"]:
-
-                st.write(
-                    f"⚽ {scorer}"
-                )
-
-
-            st.write(
-                f"💰 Prize Money: ${match['money']:,}"
-            )
 
 
     elif page == "👥 Squad":
@@ -158,16 +125,54 @@ else:
 
         for player in club.players:
 
-            st.subheader(
-                f"⚽ {player.name}"
+            st.write(
+                f"⚽ {player.name} | "
+                f"{player.position} | "
+                f"⭐ {player.overall}"
             )
 
-            st.write(
-                f"{player.position} | ⭐ {player.overall}"
+
+
+    elif page == "🏆 League":
+
+        st.title("🏆 League Table")
+
+
+        table = sorted(
+            game.available_clubs,
+            key=lambda x: x.points,
+            reverse=True
+        )
+
+
+        for index, team in enumerate(
+            table,
+            start=1
+        ):
+
+            goal_difference = (
+                team.goals_for
+                -
+                team.goals_against
             )
 
+
             st.write(
-                f"Goals: {player.goals}"
+                f"""
+{index}. **{team.name}**
+
+Games: {team.matches}
+
+Wins: {team.wins}
+
+Draws: {team.draws}
+
+Losses: {team.losses}
+
+GD: {goal_difference}
+
+Points: {team.points}
+"""
             )
 
             st.divider()
@@ -176,46 +181,11 @@ else:
 
     elif page == "🔄 Transfers":
 
-        st.title("🔄 Transfer Market")
+        st.title("🔄 Transfers")
 
-
-        for player in game.available_players:
-
-            if player not in club.players:
-
-                st.subheader(
-                    player.name
-                )
-
-                st.write(
-                    f"{player.position} | ⭐ {player.overall}"
-                )
-
-                if st.button(
-                    f"Buy {player.name}",
-                    key=f"buy_{player.name}"
-                ):
-
-                    success, message = (
-                        game.transfer.buy_player(
-                            club,
-                            player
-                        )
-                    )
-
-                    if success:
-                        st.success(message)
-                        st.rerun()
-
-                    else:
-                        st.error(message)
-
-
-
-    elif page == "🏆 League":
-
-        st.title("🏆 League")
-        st.info("Coming soon.")
+        st.info(
+            "Transfer system active."
+        )
 
 
 
