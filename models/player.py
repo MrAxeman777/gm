@@ -1,4 +1,5 @@
 class Player:
+
     def __init__(
         self,
         name,
@@ -7,36 +8,62 @@ class Player:
         overall,
         potential,
         value,
-        wage
+        wage,
+        pace,
+        shooting,
+        passing,
+        dribbling,
+        defending,
+        physical
     ):
+
         self.name = name
         self.age = age
         self.position = position
+
         self.overall = overall
         self.potential = potential
+
         self.value = value
         self.wage = wage
 
-        self.morale = 75
-        self.fitness = 100
-        self.form = 75
+        # Player attributes
+        self.pace = pace
+        self.shooting = shooting
+        self.passing = passing
+        self.dribbling = dribbling
+        self.defending = defending
+        self.physical = physical
 
+        # Career stats
+        self.matches = 0
         self.goals = 0
         self.assists = 0
-        self.matches = 0
 
-    def improve(self):
-        if self.age <= 23 and self.overall < self.potential:
-            self.overall += 1
+        # Development
+        self.form = 75
+        self.fitness = 100
+        self.morale = 75
 
-    def age_up(self):
-        self.age += 1
 
     def play_match(self):
         self.matches += 1
 
+
     def score_goal(self):
         self.goals += 1
 
+
+    def assist_goal(self):
+        self.assists += 1
+
+
+    def improve(self):
+
+        if self.age <= 23 and self.overall < self.potential:
+            self.overall += 1
+
+
     def get_market_value(self):
+
         return self.value
