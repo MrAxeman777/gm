@@ -23,7 +23,6 @@ st.sidebar.title("⚽ Soccer GM")
 if game.club is None:
 
     st.title("⚽ Soccer GM")
-
     st.write("Start your manager career.")
 
     club_names = [
@@ -36,10 +35,7 @@ if game.club is None:
         club_names
     )
 
-    if st.button(
-        "Start Career",
-        use_container_width=True
-    ):
+    if st.button("Start Career"):
 
         game.choose_club(selected_club)
         st.rerun()
@@ -67,6 +63,7 @@ else:
     )
 
 
+    # Dashboard
     if page == "🏠 Dashboard":
 
         st.title(f"🏟️ {club.name}")
@@ -94,60 +91,28 @@ else:
 
         st.divider()
 
-        st.subheader("📅 Next Match")
-
-        if st.button(
-            "▶ Play Match",
-            use_container_width=True
-        ):
+        if st.button("▶ Play Match"):
 
             result = game.play_match()
 
-            st.success(result["result"])
+            st.success(
+                result["result"]
+            )
 
             st.write(
                 f"💰 Earned ${result['money']:,}"
             )
 
-            st.write(
-                f"📅 Week {result['week']}"
-            )
 
-
+    # Squad
     elif page == "👥 Squad":
 
         st.title("👥 Squad")
 
+
         if club.players:
 
             for player in club.players:
-
-                st.subheader(
-                    f"⚽ {player.name}"
-                )
-
-                st.write(
-                    f"{player.position} | "
-                    f"⭐ {player.overall} | "
-                    f"💰 ${player.value:,}"
-                )
-
-                st.divider()
-
-        else:
-
-            st.info(
-                "Your squad is empty."
-            )
-
-
-    elif page == "🔄 Transfers":
-
-        st.title("🔄 Transfer Market")
-
-        for player in game.available_players:
-
-            if player not in club.players:
 
                 st.subheader(
                     f"⚽ {player.name}"
@@ -164,8 +129,62 @@ else:
 
 
                 if st.button(
+                    f"Sell {player.name}",
+                    key=f"sell_{player.name}"
+                ):
+
+                    success, message = (
+                        game.transfer.sell_player(
+                            club,
+                            player
+                        )
+                    )
+
+                    if success:
+                        st.success(message)
+                        st.rerun()
+
+                    else:
+                        st.error(message)
+
+
+                st.divider()
+
+
+        else:
+
+            st.info(
+                "Your squad is empty."
+            )
+
+
+    # Transfers
+    elif page == "🔄 Transfers":
+
+        st.title("🔄 Transfer Market")
+
+
+        for player in game.available_players:
+
+            if player not in club.players:
+
+                st.subheader(
+                    f"⚽ {player.name}"
+                )
+
+                st.write(
+                    f"{player.position} | "
+                    f"⭐ {player.overall}"
+                )
+
+                st.write(
+                    f"💰 ${player.value:,}"
+                )
+
+
+                if st.button(
                     f"Buy {player.name}",
-                    key=player.name
+                    key=f"buy_{player.name}"
                 ):
 
                     success, message = (
@@ -189,10 +208,7 @@ else:
     elif page == "🏆 League":
 
         st.title("🏆 League")
-
-        st.info(
-            "League system coming soon."
-        )
+        st.info("Coming soon.")
 
 
     elif page == "💰 Finances":
