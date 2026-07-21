@@ -6,7 +6,13 @@
     "overall": 86,
     "potential": 86,
     "value": 70000000,
-    "wage": 250000
+    "wage": 250000,
+    "pace": 75,
+    "shooting": 84,
+    "passing": 89,
+    "dribbling": 84,
+    "defending": 65,
+    "physical": 78
   },
   {
     "name": "Lamine Yamal",
@@ -15,7 +21,13 @@
     "overall": 89,
     "potential": 94,
     "value": 150000000,
-    "wage": 200000
+    "wage": 200000,
+    "pace": 92,
+    "shooting": 82,
+    "passing": 87,
+    "dribbling": 92,
+    "defending": 35,
+    "physical": 65
   },
   {
     "name": "Kylian Mbappe",
@@ -24,7 +36,13 @@
     "overall": 91,
     "potential": 92,
     "value": 180000000,
-    "wage": 350000
+    "wage": 350000,
+    "pace": 97,
+    "shooting": 90,
+    "passing": 83,
+    "dribbling": 92,
+    "defending": 40,
+    "physical": 85
   },
   {
     "name": "Jude Bellingham",
@@ -33,6 +51,12 @@
     "overall": 90,
     "potential": 95,
     "value": 160000000,
-    "wage": 300000
+    "wage": 300000,
+    "pace": 82,
+    "shooting": 86,
+    "passing": 88,
+    "dribbling": 87,
+    "defending": 82,
+    "physical": 88
   }
 ]
