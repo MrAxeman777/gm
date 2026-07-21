@@ -4,6 +4,7 @@ from services.finance_service import FinanceService
 from services.transfer_service import TransferService
 from services.match_service import MatchService
 from services.season_service import SeasonService
+from services.fixture_service import FixtureService
 
 from models.club import Club
 from models.player import Player
@@ -17,9 +18,14 @@ class GameEngine:
         self.transfer = TransferService()
         self.match = MatchService()
         self.season = SeasonService()
+        self.fixture_service = FixtureService()
 
         self.available_players = self.load_players()
         self.available_clubs = self.load_clubs()
+
+        self.fixture_service.generate_fixtures(
+            self.available_clubs
+        )
 
         self.club = None
 
@@ -83,7 +89,9 @@ class GameEngine:
 
             clubs.append(club)
 
+
         return clubs
+
 
 
     def choose_club(self, club_name):
@@ -98,13 +106,31 @@ class GameEngine:
         return False
 
 
+
     def play_match(self):
 
-        result = self.match.play_match(
-            self.club,
+        fixture = self.fixture_service.get_next_match(
             self.club
         )
 
+
+        if fixture is None:
+
+            return {
+                "result": "No more fixtures!"
+            }
+
+
+        fixture["played"] = True
+
+
+        result = self.match.play_match(
+            fixture["home"],
+            fixture["away"]
+        )
+
+
         self.season.next_week()
+
 
         return result
