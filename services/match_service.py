@@ -10,21 +10,20 @@ class MatchService:
     def team_strength(self, club):
 
         if not club.players:
-            return 50
+            return 60
 
         total = 0
 
         for player in club.players:
 
-            player_rating = (
+            total += (
                 player.overall
                 + player.form / 10
                 + player.fitness / 20
             )
 
-            total += player_rating
-
         return total / len(club.players)
+
 
 
     def choose_scorer(self, club):
@@ -32,24 +31,45 @@ class MatchService:
         if not club.players:
             return "Unknown Player"
 
+
         attackers = [
             player for player in club.players
-            if player.position in ["ST", "RW", "LW", "CAM"]
+            if player.position in [
+                "ST",
+                "RW",
+                "LW",
+                "CAM"
+            ]
         ]
 
+
         if attackers:
-            return random.choice(attackers).name
 
-        return random.choice(club.players).name
+            return random.choice(
+                attackers
+            )
 
 
-    def play_match(self, home_club, away_club):
+        return random.choice(
+            club.players
+        )
 
-        home_power = self.team_strength(home_club)
-        away_power = self.team_strength(away_club)
 
-        # Home advantage
-        home_power += 5
+
+    def play_match(
+        self,
+        home_club,
+        away_club
+    ):
+
+        home_power = (
+            self.team_strength(home_club)
+            + 5
+        )
+
+        away_power = self.team_strength(
+            away_club
+        )
 
 
         home_goals = max(
@@ -59,6 +79,7 @@ class MatchService:
                 1
             ))
         )
+
 
         away_goals = max(
             0,
@@ -75,59 +96,72 @@ class MatchService:
 
         for _ in range(home_goals):
 
-            scorer = self.choose_scorer(home_club)
+            scorer = self.choose_scorer(
+                home_club
+            )
 
-            home_scorers.append(scorer)
+            scorer.score_goal()
 
-
-            for player in home_club.players:
-
-                if player.name == scorer:
-
-                    player.score_goal()
+            home_scorers.append(
+                scorer.name
+            )
 
 
         for _ in range(away_goals):
 
-            scorer = self.choose_scorer(away_club)
+            scorer = self.choose_scorer(
+                away_club
+            )
 
-            away_scorers.append(scorer)
+            scorer.score_goal()
+
+            away_scorers.append(
+                scorer.name
+            )
 
 
-            for player in away_club.players:
+        # Update league stats
 
-                if player.name == scorer:
+        home_club.record_match(
+            home_goals,
+            away_goals
+        )
 
-                    player.score_goal()
+        away_club.record_match(
+            away_goals,
+            home_goals
+        )
 
+
+        # Prize money
 
         if home_goals > away_goals:
 
-            winner = home_club.name
-
             home_club.budget += 3000000
+
+            winner = home_club.name
 
 
         elif away_goals > home_goals:
 
-            winner = away_club.name
-
             away_club.budget += 3000000
+
+            winner = away_club.name
 
 
         else:
 
-            winner = "Draw"
-
             home_club.budget += 1000000
             away_club.budget += 1000000
+
+            winner = "Draw"
 
 
 
         return {
 
             "result":
-                f"{home_club.name} {home_goals}-{away_goals} {away_club.name}",
+            f"{home_club.name} {home_goals}-{away_goals} {away_club.name}",
 
             "winner": winner,
 
