@@ -3,20 +3,35 @@ from services.transfer_service import TransferService
 from services.match_service import MatchService
 from services.season_service import SeasonService
 
+from models.club import Club
+
 
 class GameEngine:
+
     def __init__(self):
-        self.club = None
-        self.current_week = 1
-        self.current_season = "2026/27"
 
         self.finance = FinanceService()
         self.transfer = TransferService()
         self.match = MatchService()
         self.season = SeasonService()
 
-    def choose_club(self, club):
-        self.club = club
+        self.club = Club(
+            name="Manchester United",
+            league="Premier League",
+            budget=150_000_000,
+            wage_budget=4_000_000,
+            reputation=90
+        )
 
-    def next_week(self):
-        self.current_week += 1
+    def play_match(self):
+
+        # Temporary placeholder
+        self.club.budget += 3_000_000
+
+        self.season.next_week()
+
+        return {
+            "result": "Manchester United 2-1 Chelsea",
+            "money": 3000000,
+            "week": self.season.current_week
+        }
