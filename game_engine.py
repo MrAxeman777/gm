@@ -28,6 +28,7 @@ class GameEngine:
         )
 
         self.club = None
+        self.season_winner = None
 
 
     def load_players(self):
@@ -39,25 +40,26 @@ class GameEngine:
 
         for p in data:
 
-            player = Player(
-                name=p["name"],
-                age=p["age"],
-                position=p["position"],
-                overall=p["overall"],
-                potential=p["potential"],
-                value=p["value"],
-                wage=p["wage"],
-                pace=p["pace"],
-                shooting=p["shooting"],
-                passing=p["passing"],
-                dribbling=p["dribbling"],
-                defending=p["defending"],
-                physical=p["physical"]
+            players.append(
+                Player(
+                    name=p["name"],
+                    age=p["age"],
+                    position=p["position"],
+                    overall=p["overall"],
+                    potential=p["potential"],
+                    value=p["value"],
+                    wage=p["wage"],
+                    pace=p["pace"],
+                    shooting=p["shooting"],
+                    passing=p["passing"],
+                    dribbling=p["dribbling"],
+                    defending=p["defending"],
+                    physical=p["physical"]
+                )
             )
 
-            players.append(player)
-
         return players
+
 
 
     def load_clubs(self):
@@ -65,7 +67,9 @@ class GameEngine:
         with open("data/clubs.json", "r") as file:
             data = json.load(file)
 
+
         clubs = []
+
 
         for c in data:
 
@@ -109,15 +113,34 @@ class GameEngine:
 
     def play_match(self):
 
-        fixture = self.fixture_service.get_next_match(
-            self.club
+        if self.season.finished:
+
+            winner = self.season.finish_season(
+                self.available_clubs
+            )
+
+            return {
+                "result":
+                f"🏆 Season Winner: {winner.name}",
+
+                "winner":
+                winner.name
+            }
+
+
+        fixture = (
+            self.fixture_service
+            .get_next_match(self.club)
         )
 
 
         if fixture is None:
 
+            self.season.finished = True
+
             return {
-                "result": "No more fixtures!"
+                "result":
+                "Season completed!"
             }
 
 
@@ -131,6 +154,17 @@ class GameEngine:
 
 
         self.season.next_week()
+
+
+        if self.season.finished:
+
+            winner = self.season.finish_season(
+                self.available_clubs
+            )
+
+            result["season_winner"] = (
+                winner.name
+            )
 
 
         return result
