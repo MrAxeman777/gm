@@ -1,1 +1,38 @@
-
+[
+  {
+    "name": "Bruno Fernandes",
+    "age": 31,
+    "position": "CAM",
+    "overall": 86,
+    "potential": 86,
+    "value": 70000000,
+    "wage": 250000
+  },
+  {
+    "name": "Lamine Yamal",
+    "age": 19,
+    "position": "RW",
+    "overall": 89,
+    "potential": 94,
+    "value": 150000000,
+    "wage": 200000
+  },
+  {
+    "name": "Kylian Mbappe",
+    "age": 27,
+    "position": "ST",
+    "overall": 91,
+    "potential": 92,
+    "value": 180000000,
+    "wage": 350000
+  },
+  {
+    "name": "Jude Bellingham",
+    "age": 23,
+    "position": "CM",
+    "overall": 90,
+    "potential": 95,
+    "value": 160000000,
+    "wage": 300000
+  }
+]
