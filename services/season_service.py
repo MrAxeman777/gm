@@ -1,17 +1,52 @@
 class SeasonService:
+
     def __init__(self):
-        self.current_season = "2026/27"
+
         self.current_week = 1
+        self.max_weeks = 20
+
+        self.finished = False
+        self.champion = None
+
+
 
     def next_week(self):
+
         self.current_week += 1
 
-        if self.current_week > 38:
-            self.current_week = 1
-            self.advance_season()
 
-    def advance_season(self):
-        start_year = int(self.current_season[:4])
-        end_year = start_year + 2
+        if self.current_week > self.max_weeks:
 
-        self.current_season = f"{start_year + 1}/{str(end_year)[2:]}"
+            self.finished = True
+
+
+
+    def finish_season(self, clubs):
+
+        if not clubs:
+            return None
+
+
+        winner = max(
+            clubs,
+            key=lambda club: club.points
+        )
+
+
+        winner.trophies.append(
+            "League Champion"
+        )
+
+
+        self.champion = winner.name
+
+
+        return winner
+
+
+
+    def reset(self):
+
+        self.current_week = 1
+        self.finished = False
+        self.champion = None
