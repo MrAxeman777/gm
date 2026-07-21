@@ -19,3 +19,16 @@ class TransferService:
         buying_club.add_player(player)
 
         return True, f"{player.name} signed for {buying_club.name}!"
+
+
+    def sell_player(self, club, player):
+
+        if player not in club.players:
+            return False, "Player is not in squad"
+
+
+        club.players.remove(player)
+
+        club.budget += player.value
+
+        return True, f"{player.name} sold for ${player.value:,}!"
