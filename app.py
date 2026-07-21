@@ -10,7 +10,6 @@ st.set_page_config(
 )
 
 
-# Create game engine
 if "game" not in st.session_state:
     st.session_state.game = GameEngine()
 
@@ -20,10 +19,6 @@ game = st.session_state.game
 
 st.sidebar.title("⚽ Soccer GM")
 
-
-# -------------------------
-# New Career
-# -------------------------
 
 if game.club is None:
 
@@ -36,12 +31,10 @@ if game.club is None:
         for club in game.available_clubs
     ]
 
-
     selected_club = st.selectbox(
         "Choose your club:",
         club_names
     )
-
 
     if st.button(
         "Start Career",
@@ -49,13 +42,8 @@ if game.club is None:
     ):
 
         game.choose_club(selected_club)
-
         st.rerun()
 
-
-# -------------------------
-# Main Game
-# -------------------------
 
 else:
 
@@ -79,15 +67,11 @@ else:
     )
 
 
-    # Dashboard
     if page == "🏠 Dashboard":
 
-        st.title(
-            f"🏟️ {club.name}"
-        )
+        st.title(f"🏟️ {club.name}")
 
         col1, col2, col3 = st.columns(3)
-
 
         with col1:
             st.metric(
@@ -95,13 +79,11 @@ else:
                 f"${club.budget:,}"
             )
 
-
         with col2:
             st.metric(
                 "⭐ Reputation",
                 club.reputation
             )
-
 
         with col3:
             st.metric(
@@ -112,9 +94,7 @@ else:
 
         st.divider()
 
-
         st.subheader("📅 Next Match")
-
 
         if st.button(
             "▶ Play Match",
@@ -123,12 +103,10 @@ else:
 
             result = game.play_match()
 
-            st.success(
-                result["result"]
-            )
+            st.success(result["result"])
 
             st.write(
-                f"💰 Earned: ${result['money']:,}"
+                f"💰 Earned ${result['money']:,}"
             )
 
             st.write(
@@ -136,13 +114,11 @@ else:
             )
 
 
-    # Squad
     elif page == "👥 Squad":
 
         st.title("👥 Squad")
 
-
-        if len(club.players) > 0:
+        if club.players:
 
             for player in club.players:
 
@@ -150,42 +126,13 @@ else:
                     f"⚽ {player.name}"
                 )
 
-
-                col1, col2, col3 = st.columns(3)
-
-
-                with col1:
-                    st.write(
-                        f"Position: {player.position}"
-                    )
-
-                    st.write(
-                        f"Age: {player.age}"
-                    )
-
-
-                with col2:
-                    st.write(
-                        f"⭐ Overall: {player.overall}"
-                    )
-
-                    st.write(
-                        f"🚀 Potential: {player.potential}"
-                    )
-
-
-                with col3:
-                    st.write(
-                        f"💰 Value: ${player.value:,}"
-                    )
-
-                    st.write(
-                        f"💵 Wage: ${player.wage:,}"
-                    )
-
+                st.write(
+                    f"{player.position} | "
+                    f"⭐ {player.overall} | "
+                    f"💰 ${player.value:,}"
+                )
 
                 st.divider()
-
 
         else:
 
@@ -194,27 +141,60 @@ else:
             )
 
 
-    # Transfers
     elif page == "🔄 Transfers":
 
         st.title("🔄 Transfer Market")
 
-        st.info(
-            "Transfer market coming next."
-        )
+        for player in game.available_players:
+
+            if player not in club.players:
+
+                st.subheader(
+                    f"⚽ {player.name}"
+                )
+
+                st.write(
+                    f"{player.position} | "
+                    f"⭐ {player.overall}"
+                )
+
+                st.write(
+                    f"💰 Value: ${player.value:,}"
+                )
 
 
-    # League
+                if st.button(
+                    f"Buy {player.name}",
+                    key=player.name
+                ):
+
+                    success, message = (
+                        game.transfer.buy_player(
+                            club,
+                            player
+                        )
+                    )
+
+                    if success:
+                        st.success(message)
+                        st.rerun()
+
+                    else:
+                        st.error(message)
+
+
+                st.divider()
+
+
     elif page == "🏆 League":
 
         st.title("🏆 League")
 
         st.info(
-            "League system coming next."
+            "League system coming soon."
         )
 
 
-    # Finances
     elif page == "💰 Finances":
 
         st.title("💰 Finances")
