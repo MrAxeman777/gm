@@ -6,7 +6,6 @@ class MatchService:
     def __init__(self):
         pass
 
-
     def team_strength(self, club):
 
         if not club.players:
@@ -23,7 +22,6 @@ class MatchService:
 
         return total / len(club.players)
 
-
     def choose_scorer(self, club):
 
         if not club.players:
@@ -39,12 +37,7 @@ class MatchService:
 
         return random.choice(club.players)
 
-
-    def play_match(
-        self,
-        home_club,
-        away_club
-    ):
+    def play_match(self, home_club, away_club):
 
         home_power = self.team_strength(home_club) + 5
         away_power = self.team_strength(away_club)
@@ -66,60 +59,34 @@ class MatchService:
 
             scorer = self.choose_scorer(home_club)
 
-            raise Exception(
-                f"""
-DEBUG
-
-Scorer: {scorer}
-
-Type: {type(scorer)}
-
-Club Players:
-
-{club_players(home_club)}
-"""
-            )
+            if scorer is not None and hasattr(scorer, "score_goal"):
+                scorer.score_goal()
+                home_scorers.append(scorer.name)
+            else:
+                home_scorers.append("Unknown")
 
         for _ in range(away_goals):
 
             scorer = self.choose_scorer(away_club)
 
-            raise Exception(
-                f"""
-DEBUG
+            if scorer is not None and hasattr(scorer, "score_goal"):
+                scorer.score_goal()
+                away_scorers.append(scorer.name)
+            else:
+                away_scorers.append("Unknown")
 
-Scorer: {scorer}
-
-Type: {type(scorer)}
-
-Club Players:
-
-{club_players(away_club)}
-"""
-            )
-
-        home_club.record_match(
-            home_goals,
-            away_goals
-        )
-
-        away_club.record_match(
-            away_goals,
-            home_goals
-        )
+        home_club.record_match(home_goals, away_goals)
+        away_club.record_match(away_goals, home_goals)
 
         if home_goals > away_goals:
-
             home_club.budget += 3000000
             winner = home_club.name
 
         elif away_goals > home_goals:
-
             away_club.budget += 3000000
             winner = away_club.name
 
         else:
-
             home_club.budget += 1000000
             away_club.budget += 1000000
             winner = "Draw"
@@ -131,15 +98,3 @@ Club Players:
             "away_scorers": away_scorers,
             "money": 3000000
         }
-
-
-def club_players(club):
-
-    output = []
-
-    for player in club.players:
-        output.append(
-            f"{player} ({type(player)})"
-        )
-
-    return "\n".join(output)
